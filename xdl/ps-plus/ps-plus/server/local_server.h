@@ -32,7 +32,12 @@ namespace server {
 class LocalServer {
  public:
   LocalServer(const std::string& ckpt_path);
-  ~LocalServer() = default;
+  ~LocalServer(){
+     if (save_thread.joinable()) {
+        save_thread.join();
+        printf("delete!!in localserver\n");
+     }
+  }
   Status Init();
   Status RegisterUdfChain(const UdfChainRegister& def);
   Status Process(size_t udf, 
@@ -43,6 +48,7 @@ class LocalServer {
   Status Save(const std::string& ckpt_version);
   Status GetVariableInfo(const std::string& var_name, VariableInfo* info);
   Status RegisterVariable(const std::string& name, const VariableInfo& info);
+  std::thread save_thread;
 
  private:
   Status RunUdfChain(size_t udf, 

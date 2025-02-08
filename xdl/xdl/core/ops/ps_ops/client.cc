@@ -42,7 +42,7 @@ bool ConnectToClient(const std::string& addr, const std::string& ckpt_path) {
     ps::client::RawClient* raw_client = new ps::client::RawClient(args);
     current_client.reset(new ps::client::Client(raw_client));
   }
-
+  printf("form xdl clinet core\n");
   ps::Status st = current_client->Init();
   if (!st.IsOk()) {
     current_client.reset(nullptr);

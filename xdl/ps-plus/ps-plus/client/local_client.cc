@@ -21,6 +21,7 @@ limitations under the License.
 #include "ps-plus/client/partitioner/index.h"
 #include "ps-plus/client/partitioner/hash.h"
 
+#include <cstdio>
 #include <iostream>
 
 namespace ps {
@@ -199,7 +200,6 @@ void LocalClient::DensePush(const std::string& variable_name,
     std::unique_ptr<std::vector<std::unique_ptr<Data>>> deleter(outputs);
     cb(st);
   };
-
   Process(udf, variable_name, inputs, outputs, realcb);
 }
 

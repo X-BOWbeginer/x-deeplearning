@@ -27,56 +27,64 @@ limitations under the License.
 
 namespace ps {
 namespace server {
-
+//extern std::thread save_threat;
 class CheckpointUtils {
- public:
-  CheckpointUtils(const VariableInfoCollection& infos);
-  Status LoadVariables(
-      const VariableInfoCollection& infos,
-      size_t id,
-      std::unordered_map<std::string, std::unique_ptr<Variable>>* vars);
-  Status SaveVariables(
-      size_t id,
-      const std::string& checkpoint_path,
-      const std::unordered_map<std::string, std::unique_ptr<Variable>>& vars,
-      size_t timeout=30);
+  public:
+  ~CheckpointUtils(){
+    printf("delete!!!!!!!!!!!!\n");
+  }
+   CheckpointUtils(const VariableInfoCollection& infos);
+   Status LoadVariables(
+       const VariableInfoCollection& infos,
+       size_t id,
+       std::unordered_map<std::string, std::unique_ptr<Variable>>* vars);
+   Status SaveVariables(
+       size_t id,
+       const std::string& checkpoint_path,
+       const std::unordered_map<std::string, std::unique_ptr<Variable>>& vars,
+       size_t timeout = 30,
+       std::thread *save_thread=nullptr);
+   void saveVar2memory(const std::unordered_map<std::string, std::unique_ptr<Variable>>& vars, std::unordered_map<std::string, std::unique_ptr<Variable>>& vars_copy);
+   Status saveCheckpoint(size_t id,
+                         const std::string& checkpoint_path,
+                         const std::unordered_map<std::string, std::unique_ptr<Variable>>& vars,
+                         size_t timeout = 30);
 
- private:
-  struct VariableStruct {
-    enum SlicerType : int32_t {
-      kIndexSlicer = 0,
-      kHashSlicer128 = 1,
-      kHashSlicer64 = 2,
-    };
-    bool initialized;
-    SlicerType type;
-    HashMapStruct<Hash128Key> hash_slicer128;
-    HashMapStruct<int64_t> hash_slicer64;
-    size_t index_slicer;
-    Tensor data;
-    std::unordered_map<std::string, Variable::Slot> slots;
-  };
-  struct LoadVariableStruct {
-    VariableStruct variable;
-    size_t beg, end;
-    size_t clip_beg, clip_end;
-  };
-  Status LoadVariable(const VariableInfo& info, size_t part, VariableStruct* var);
-  Status VariableToStruct(const std::unique_ptr<Variable>& var, VariableStruct* vs);
-  static Status SaveVariable(const std::string& checkpoint_path, const std::string& var_name, size_t part, VariableStruct* var);
-  static std::string VariableInfoToFileName(const VariableInfo& info, size_t id);
-  static std::string VariableNameToFileName(const std::string& name, size_t id);
-  static Status LoadVariable(const std::string& name, FileSystem::ReadStream* s, VariableStruct* var);
-  static Status SaveVariable(FileSystem::WriteStream* s, VariableStruct* var);
-  static Status LoadTensor(const std::string& name, FileSystem::ReadStream* s, VariableStruct::SlicerType slicer_type, Tensor* data);
-  static Status SaveTensor(FileSystem::WriteStream* s, const Tensor& data);
-  static std::unordered_map<std::string, Variable::Slot> CloneSlots(const std::unordered_map<std::string, Variable::Slot>& slots);
-  Status MergeLoadVariable(const std::string& name, const VariableInfo& info, size_t beg, size_t end, std::unique_ptr<Variable>* result_variable);
-  Status LoadHashVariable(const std::vector<std::unique_ptr<LoadVariableStruct>>& variables, const std::string& name, const VariableInfo& info, size_t beg, size_t end, std::unique_ptr<Variable>& result_variable);
-  static int64_t CalMaxSize(const std::vector<std::unique_ptr<LoadVariableStruct> >& variables, const std::string& name, size_t begin, size_t end, std::vector<std::vector<int64_t> >* keys, std::vector<std::vector<int64_t> >* values);
-  VariableInfoCollection infos_;
+  private:
+   struct VariableStruct {
+      enum SlicerType : int32_t {
+         kIndexSlicer = 0,
+         kHashSlicer128 = 1,
+         kHashSlicer64 = 2,
+      };
+      bool initialized;
+      SlicerType type;
+      HashMapStruct<Hash128Key> hash_slicer128;
+      HashMapStruct<int64_t> hash_slicer64;
+      size_t index_slicer;
+      Tensor data;
+      std::unordered_map<std::string, Variable::Slot> slots;
+   };
+   struct LoadVariableStruct {
+      VariableStruct variable;
+      size_t beg, end;
+      size_t clip_beg, clip_end;
+   };
+   Status LoadVariable(const VariableInfo& info, size_t part, VariableStruct* var);
+   Status VariableToStruct(const std::unique_ptr<Variable>& var, VariableStruct* vs);
+   static Status SaveVariable(const std::string& checkpoint_path, const std::string& var_name, size_t part, VariableStruct* var);
+   static std::string VariableInfoToFileName(const VariableInfo& info, size_t id);
+   static std::string VariableNameToFileName(const std::string& name, size_t id);
+   static Status LoadVariable(const std::string& name, FileSystem::ReadStream* s, VariableStruct* var);
+   static Status SaveVariable(FileSystem::WriteStream* s, VariableStruct* var);
+   static Status LoadTensor(const std::string& name, FileSystem::ReadStream* s, VariableStruct::SlicerType slicer_type, Tensor* data);
+   static Status SaveTensor(FileSystem::WriteStream* s, const Tensor& data);
+   static std::unordered_map<std::string, Variable::Slot> CloneSlots(const std::unordered_map<std::string, Variable::Slot>& slots);
+   Status MergeLoadVariable(const std::string& name, const VariableInfo& info, size_t beg, size_t end, std::unique_ptr<Variable>* result_variable);
+   Status LoadHashVariable(const std::vector<std::unique_ptr<LoadVariableStruct>>& variables, const std::string& name, const VariableInfo& info, size_t beg, size_t end, std::unique_ptr<Variable>& result_variable);
+   static int64_t CalMaxSize(const std::vector<std::unique_ptr<LoadVariableStruct>>& variables, const std::string& name, size_t begin, size_t end, std::vector<std::vector<int64_t>>* keys, std::vector<std::vector<int64_t>>* values);
+   VariableInfoCollection infos_;
 };
-
 }
 }
 

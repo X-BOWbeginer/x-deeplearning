@@ -21,28 +21,29 @@ limitations under the License.
 namespace ps {
 
 class Data {
-public:
-    virtual ~Data() {}
+  public:
+   virtual ~Data() {}
 };
 
-template<typename T>
+template <typename T>
 class WrapperData : public Data {
- public:
-  template<typename... Args>
-  WrapperData(Args&&... args) : internal_(std::forward<Args>(args)...) {}
+  public:
+   template <typename... Args>
+   WrapperData(Args&&... args)
+       : internal_(std::forward<Args>(args)...) {}
 
-  T& Internal() {
-    return internal_;
-  }
+   T& Internal() {
+      return internal_;
+   }
 
-  const T& Internal() const {
-    return internal_;
-  }
- private:
-  T internal_;
+   const T& Internal() const {
+      return internal_;
+   }
+
+  private:
+   T internal_;
 };
 
-}
+}  // namespace ps
 
 #endif
-

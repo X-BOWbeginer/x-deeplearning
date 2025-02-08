@@ -22,6 +22,7 @@ limitations under the License.
 #include "ps-plus/common/initializer/constant_initializer.h"
 #include "ps-plus/common/initializer/none_initializer.h"
 #include "ps-plus/message/worker_state.h"
+#include <cstdio>
 #include <thread>
 
 using ps::Data;
@@ -154,6 +155,7 @@ class MockClientWrapper : public ClientWrapper {
     return Status::Ok();
   }
   void Save(const std::string& version, const Callback& cb) {
+    printf("form test returnasync\n");
     ReturnAsync(Status::Ok(), cb);
     return;
   };
@@ -559,6 +561,7 @@ TEST(ClientTest, OtherTest) {
   client->Init();
 
   std::promise<Status> st_promise;
+  printf("form test&st_promise\n");
   client->Save("version_test", [&st_promise](Status st){
     st_promise.set_value(st);
   });
@@ -726,6 +729,7 @@ TEST(LocalClientTest, LocalTest) {
   client->Init();
 
   std::promise<Status> st_promise;
+  printf("form test\n");
   client->Save("version_test", [&st_promise](Status st){
     st_promise.set_value(st);
   });

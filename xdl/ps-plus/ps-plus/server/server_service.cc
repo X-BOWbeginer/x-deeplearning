@@ -216,6 +216,7 @@ void ServerService::Save(const std::vector<Data*>& inputs, std::vector<Data*>* o
     return;
   }
   LOG(INFO) << "Saving Checkpoint " << checkpoint->Internal().c_str();
+  printf("hello form server servicess\n");
   Status st = server_->Save(ver->Internal(), checkpoint->Internal(), info->Internal());
   outputs->push_back(new WrapperData<Status>(st));
   LOG(INFO) << "Saving Checkpoint Done " << checkpoint->Internal().c_str();

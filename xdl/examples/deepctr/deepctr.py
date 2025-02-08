@@ -34,7 +34,8 @@ def train():
     loss = model(batch['deep0'], [emb1, emb2], batch['label'])
     train_op = xdl.SGD(0.5).optimize()
     log_hook = xdl.LoggerHook(loss, "loss:{0}", 10)
-    sess = xdl.TrainSession(hooks=[log_hook])
+    ckpthook=xdl.CheckpointHook(100)
+    sess = xdl.TrainSession(hooks=[log_hook,ckpthook])
     while not sess.should_stop():
         sess.run(train_op)
 

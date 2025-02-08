@@ -69,6 +69,7 @@ class LocalClient: public BaseClient {
                const Callback& cb);
                
   void Save(const std::string& name, const Callback& cb) override {
+    printf("hello form local client\n");
     Status st = local_server_->Save(name);
     cb(st);
   }

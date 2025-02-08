@@ -54,16 +54,18 @@ def model_fn(inputs, labels):
     return tf.reduce_mean(cross_entropy, name='xentropy_mean'), logits
 
 def fc(inputs, w_shape, b_shape):
-    w = tf.get_variable(
-        "weights", 
-        w_shape, 
-        initializer=tf.truncated_normal_initializer(dtype=tf.float32, stddev=0.36), 
-        regularizer=tf.nn.l2_loss)
-    b = tf.get_variable(
-        "bias", 
-        b_shape, 
-        initializer=tf.uniform_unit_scaling_initializer(factor=0.1, seed=10, dtype=tf.float32))
-    return tf.matmul(inputs, w)
+    with tf.variable_scope("fc_layer"):
+        w = tf.get_variable(
+            "weights", 
+            w_shape, 
+            initializer=tf.truncated_normal_initializer(dtype=tf.float32, stddev=0.36), 
+            regularizer=tf.nn.l2_loss)
+        b = tf.get_variable(
+            "bias", 
+            b_shape, 
+            initializer=tf.initializers.zeros())  
+    return tf.matmul(inputs, w) + b  
+
 
 def train():
     estimator = xdl.Estimator(
